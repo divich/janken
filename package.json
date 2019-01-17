@@ -1,0 +1,50 @@
+{
+  "name": "janken",
+  "version": "0.1.0",
+  "homepage": "./",
+  "private": true,
+  "dependencies": {
+    "@material-ui/core": "^3.7.0",
+    "@material-ui/icons": "^3.0.1",
+    "cordova-android": "^7.0.0",
+    "cordova-plugin-whitelist": "^1.3.3",
+    "human-timer": "^1.0.0",
+    "lyef-counter": "^1.0.2",
+    "moment": "^2.22.2",
+    "moment-timer": "^1.3.0",
+    "react": "^16.6.3",
+    "react-countdown-clock": "^2.5.0",
+    "react-dom": "^16.6.3",
+    "react-icon-base": "^2.1.2",
+    "react-router-dom": "^4.2.2",
+    "react-scripts": "2.1.1"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build && rm -rf www && mv build www",
+    "lint": "eslint src",
+    "test": "react-scripts test --env=jsdom",
+    "eject": "react-scripts eject",
+    "deploy": "yarn build && rm ./www/static/js/*.map && firebase deploy",
+    "deployWindows": "yarn build && del www\\static\\js\\*.map && firebase deploy",
+    "android": "yarn build && cordova run android",
+    "ios": "yarn build && cordova run ios"
+  },
+  "eslintConfig": {
+    "extends": "react-app"
+  },
+  "browserslist": [
+    ">0.2%",
+    "not dead",
+    "not ie <= 11",
+    "not op_mini all"
+  ],
+  "cordova": {
+    "plugins": {
+      "cordova-plugin-whitelist": {}
+    },
+    "platforms": [
+      "android"
+    ]
+  }
+}
