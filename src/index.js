@@ -3,6 +3,7 @@ import ReactDOM from "react-dom";
 import { HashRouter as Router, Switch, Route } from "react-router-dom";
 import "./index.css";
 import App from "./App";
+import WaitingScreen from "./WaitingScreen";
 import GameScreen from "./gameScreen";
 import * as serviceWorker from "./serviceWorker";
 import { MuiThemeProvider, createMuiTheme } from "@material-ui/core/styles";
@@ -25,6 +26,7 @@ const startApp = () => {
         <MuiThemeProvider theme={theme}>
           <Route exact path="/" component={App} />
           <Route exact path="/gameScreen" component={GameScreen} />
+          <Route exact path="/waitingScreen" component={WaitingScreen} />
         </MuiThemeProvider>
         />
       </Switch>
