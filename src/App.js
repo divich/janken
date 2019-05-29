@@ -10,21 +10,42 @@ import DialogContentText from "@material-ui/core/DialogContentText";
 import DialogTitle from "@material-ui/core/DialogTitle";
 // import GenerateRandomCode from "GenerateRandomCode";
 import Randomatic from "randomatic";
+import Avatar from '@material-ui/core/Avatar';
+import Fab from '@material-ui/core/Fab';
+import AccountCircleIcon from '@material-ui/icons/AccountCircle';
 import IconButton from "@material-ui/core/IconButton";
 import { SvgIcon } from "@material-ui/core";
 import SettingsIcon from "../src/dist/settings";
+import { signIn, auth } from './store.js';
+import { sign } from "crypto";
 
 class App extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      open: false
+      open: false,
+      picLoading: true
     };
   }
 
   componentWillMount() {
     this.setState({ code: Randomatic("A0", 4) });
+    this.isUser();
   }
+
+isUser = () => {
+  auth.onAuthStateChanged(function (user) {
+    if (user) {
+      console.log(user);
+      this.setState({
+        photoURL: user.photoURL,
+        picLoading: false
+      })
+    } else {
+      // No user is signed in.
+    }
+  });
+}
 
   handleClickOpen = () => {
     this.setState({ open: true });
@@ -56,7 +77,7 @@ class App extends Component {
           }}
           style={{ fontSize: "35px" }}
         > */}
-        <SettingsIcon
+        {/* <SettingsIcon
           className="settings"
           onClick={e => {
             e.preventDefault();
@@ -68,6 +89,17 @@ class App extends Component {
           //   right: "10px"
           // }}
           title="Settings"
+        /> */}
+        < Avatar style = {
+          {
+            position: 'absolute',
+            top: '10px',
+            right: '10px'
+          }
+        }
+        src = {
+          this.state.photoURL === false ? null : this.state.photoURL
+        }
         />
         <div
           style={{
@@ -91,6 +123,18 @@ class App extends Component {
           }}
         >
           Play
+        </Button>
+        <Button
+          style={{ position: "absolute", bottom: "30px" }}
+          variant="contained"
+          color="primary"
+          onClick={e => {
+            e.preventDefault();
+            // this.props.history.push("/gameScreen");
+            signIn();
+          }}
+        >
+          sign in
         </Button>
         <Dialog open={this.state.open} onClose={this.handleClose}>
           <DialogTitle>Join or Host a game</DialogTitle>
@@ -127,8 +171,14 @@ class App extends Component {
             <Button onClick={this.handleClose} color="primary">
               Cancel
             </Button>
-            <Button onClick={this.handleClose} color="primary">
-              Subscribe
+            < Button onClick = {
+              e => {
+                e.preventDefault();
+                this.props.history.push("/gameScreen");
+              }
+            }
+            color = "primary" >
+              Play
             </Button>
           </DialogActions>
         </Dialog>
