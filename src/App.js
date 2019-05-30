@@ -16,7 +16,13 @@ import AccountCircleIcon from '@material-ui/icons/AccountCircle';
 import IconButton from "@material-ui/core/IconButton";
 import { SvgIcon } from "@material-ui/core";
 import SettingsIcon from "../src/dist/settings";
-import { signIn, auth } from './store.js';
+import {
+  signIn,
+  auth,
+  googleSignIn,
+  users,
+  createNewDbUser
+} from './store.js';
 import { sign } from "crypto";
 
 class App extends Component {
@@ -30,8 +36,39 @@ class App extends Component {
 
   componentWillMount() {
     this.setState({ code: Randomatic("A0", 4) });
-    this.isUser();
+    // this.isUser();
+    auth.onAuthStateChanged((loggedInUser) => {
+      this.setState({
+        authUser: loggedInUser,
+      });
+      if (loggedInUser) { // check if user is logged in
+        const user = this.returnDbEntry(loggedInUser);
+        if (user) { // check if db has an entry
+          console.log(users.doc(loggedInUser.uid));
+        } else { // if db doesn't have entry, create entry
+          createNewDbUser();
+          this.returnDbEntry(loggedInUser);
+        }
+      }
+    });
   }
+
+returnDbEntry = (loggedInUser) => {
+  users.doc(loggedInUser.uid)
+    .onSnapshot((doc) => {
+      const user = loggedInUser;
+      if (doc.exists) {
+        user.db = doc.data();
+        this.setState({
+          user
+        });
+        return true;
+      } else {
+        return false;
+      }
+    });
+}
+
 
 isUser = () => {
   auth.onAuthStateChanged(function (user) {
@@ -131,7 +168,7 @@ isUser = () => {
           onClick={e => {
             e.preventDefault();
             // this.props.history.push("/gameScreen");
-            signIn();
+            googleSignIn();
           }}
         >
           sign in

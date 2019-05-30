@@ -38,7 +38,7 @@ fire.firestore().enablePersistence()
 const db = fire.firestore();
 const auth = firebase.auth();
 const provider = new firebase.auth.GoogleAuthProvider();
-const googleSignIn = () => auth.signInWithPopup(provider);
+const googleSignIn = () => auth.signInWithRedirect(provider);
 const users = db.collection('users');
 // let user = false;
 
@@ -61,9 +61,11 @@ const signIn = () => {
 const createNewDbUser = () => {
     this.authSubscription = firebase.auth().onAuthStateChanged((user) => {
         if (user) {
-            // user = true;
             users.doc(user.uid).set({
-                user
+                id: user.uid,
+                email: user.email,
+                name: user.displayName,
+                photoURL: user.photoURL
             });
         }
     });
