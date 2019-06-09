@@ -38,7 +38,7 @@ fire.firestore().enablePersistence()
 const db = fire.firestore();
 const auth = firebase.auth();
 const provider = new firebase.auth.GoogleAuthProvider();
-const googleSignIn = () => auth.signInWithRedirect(provider);
+const googleSignIn = () => auth.signInWithRedirect(provider).then((result) => console.log(result.user));
 const users = db.collection('users');
 // let user = false;
 

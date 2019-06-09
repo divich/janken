@@ -4,6 +4,7 @@ import { HashRouter as Router, Switch, Route } from "react-router-dom";
 import "./index.css";
 import App from "./App";
 import GameScreen from "./gameScreen";
+import GameSession from "./gameSession";
 import * as serviceWorker from "./serviceWorker";
 import { MuiThemeProvider, createMuiTheme } from "@material-ui/core/styles";
 import purple from "@material-ui/core/colors/purple";
@@ -25,6 +26,7 @@ const startApp = () => {
         <MuiThemeProvider theme={theme}>
           <Route exact path="/" component={App} />
           <Route exact path="/gameScreen" component={GameScreen} />
+          <Route exact path="/gameSession/:id" component={GameSession} />
         </MuiThemeProvider>
         />
       </Switch>

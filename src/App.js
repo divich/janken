@@ -9,6 +9,8 @@ import DialogContent from "@material-ui/core/DialogContent";
 import DialogContentText from "@material-ui/core/DialogContentText";
 import DialogTitle from "@material-ui/core/DialogTitle";
 // import GenerateRandomCode from "GenerateRandomCode";
+import CircularProgress from '@material-ui/core/CircularProgress';
+import FolderIcon from '@material-ui/icons/Folder';
 import Randomatic from "randomatic";
 import Avatar from '@material-ui/core/Avatar';
 import Fab from '@material-ui/core/Fab';
@@ -30,32 +32,39 @@ class App extends Component {
     super(props);
     this.state = {
       open: false,
-      picLoading: true
+      code: null,
+      joinCode: null,
+      isUser: false
     };
   }
-
   componentWillMount() {
     this.setState({ code: Randomatic("A0", 4) });
     // this.isUser();
-    auth.onAuthStateChanged((loggedInUser) => {
+    auth.onAuthStateChanged(loggedInUser => {
       this.setState({
         authUser: loggedInUser,
+        user: loggedInUser
       });
-      if (loggedInUser) { // check if user is logged in
+      if (loggedInUser) {
+        // check if user is logged in
         const user = this.returnDbEntry(loggedInUser);
-        if (user) { // check if db has an entry
+        if (user) {
+          // check if db has an entry
           console.log(users.doc(loggedInUser.uid));
-        } else { // if db doesn't have entry, create entry
+        } else {
+          // if db doesn't have entry, create entry
           createNewDbUser();
           this.returnDbEntry(loggedInUser);
         }
+      } else {
+        // signInAnonymously(); // signInAnonymously
       }
     });
+    // console.log(this.state.user);
   }
 
-returnDbEntry = (loggedInUser) => {
-  users.doc(loggedInUser.uid)
-    .onSnapshot((doc) => {
+  returnDbEntry = loggedInUser => {
+    users.doc(loggedInUser.uid).onSnapshot(doc => {
       const user = loggedInUser;
       if (doc.exists) {
         user.db = doc.data();
@@ -67,22 +76,13 @@ returnDbEntry = (loggedInUser) => {
         return false;
       }
     });
-}
+  };
 
-
-isUser = () => {
-  auth.onAuthStateChanged(function (user) {
-    if (user) {
-      console.log(user);
-      this.setState({
-        photoURL: user.photoURL,
-        picLoading: false
-      })
-    } else {
-      // No user is signed in.
-    }
-  });
-}
+  handleTextChange = event => {
+    this.setState({
+      [event.target.name]: event.target.value
+    });
+  };
 
   handleClickOpen = () => {
     this.setState({ open: true });
@@ -97,71 +97,66 @@ isUser = () => {
   };
   render() {
     return (
-      <div
-        style={{
-          backgroundImage: "url('rps1.jpg')",
-          backgroundSize: "contain",
-          height: "100vh",
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center"
-        }}
-      >
-        {/* <IconButton
-          onClick={e => {
-            e.preventDefault();
-            alert("hey");
-          }}
-          style={{ fontSize: "35px" }}
-        > */}
-        {/* <SettingsIcon
-          className="settings"
-          onClick={e => {
-            e.preventDefault();
-            alert("Coming Soon!!!");
-          }} // style={{ // onMouseEnter={() => alert("hey")}
-          //   fontSize: "55px",
-          //   filter: "drop-shadow(0px 4px 4px #000)",
-          //   position: "absolute",
-          //   right: "10px"
-          // }}
-          title="Settings"
-        /> */}
-        < Avatar style = {
-          {
-            position: 'absolute',
-            top: '10px',
-            right: '10px'
-          }
-        }
-        src = {
-          this.state.photoURL === false ? null : this.state.photoURL
-        }
-        />
-        <div
-          style={{
-            color: "firebrick",
-            fontSize: "70px",
-            justifyContent: "center",
-            alignItems: "center",
-            fontWeight: "bold"
-          }}
-        >
-          Let's Settle This!
-        </div>
-        <Button
-          style={{ position: "absolute", bottom: "50px" }}
-          variant="contained"
-          color="primary"
-          onClick={e => {
-            e.preventDefault();
-            // this.props.history.push("/gameScreen");
-            this.handleClickOpen();
-          }}
-        >
-          Play
-        </Button>
-        <Button
+      <div>
+        {!this.state.authUser ? (
+          <Button
+            style={{
+              position: "absolute",
+              bottom: "30px"
+            }}
+            variant="contained"
+            color="primary"
+            onClick={e => {
+              e.preventDefault();
+              // this.props.history.push("/gameScreen");
+              googleSignIn();
+            }}
+          >
+            sign in
+          </Button>
+        ) : (
+          <div
+            style={{
+              backgroundImage: "url('rps1.jpg')",
+              backgroundSize: "contain",
+              height: "100vh",
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center"
+            }}
+          >
+            <Avatar
+              style={{
+                position: "absolute",
+                top: "10px",
+                right: "10px"
+              }}
+              src={this.state.user.photoURL}
+            />
+            <div
+              style={{
+                color: "firebrick",
+                fontSize: "70px",
+                justifyContent: "center",
+                alignItems: "center",
+                fontWeight: "bold"
+              }}
+            >
+              Let's Settle This!
+            </div>
+            <Button
+              style={{ position: "absolute", bottom: "50px" }}
+              variant="contained"
+              color="primary"
+              onClick={e => {
+                e.preventDefault();
+                // this.props.history.push("/gameScreen");
+                this.handleClickOpen();
+              }}
+            >
+              Play
+            </Button>
+            {/* <Button
           style={{ position: "absolute", bottom: "30px" }}
           variant="contained"
           color="primary"
@@ -172,12 +167,12 @@ isUser = () => {
           }}
         >
           sign in
-        </Button>
-        <Dialog open={this.state.open} onClose={this.handleClose}>
-          <DialogTitle>Join or Host a game</DialogTitle>
-          <DialogContent>
-            <DialogContentText>Host a game</DialogContentText>
-            {/* <Button
+        </Button> */}
+            <Dialog open={this.state.open} onClose={this.handleClose}>
+              <DialogTitle>Join or Host a game</DialogTitle>
+              <DialogContent>
+                <DialogContentText>Host a game</DialogContentText>
+                {/* <Button
               // style={{ position: "absolute", bottom: "50px" }}
               variant="contained"
               color="primary"
@@ -189,36 +184,51 @@ isUser = () => {
             >
               generate code
             </Button> */}
-            Your Code: {this.state.code}
-            <br />
-            <br />
-            OR
-            <br />
-            <br />
-            <DialogContentText>Join a game</DialogContentText>
-            <TextField
-              autoFocus
-              margin="dense"
-              id="name"
-              label="Enter code here"
-              fullWidth
-            />
-          </DialogContent>
-          <DialogActions>
-            <Button onClick={this.handleClose} color="primary">
-              Cancel
-            </Button>
-            < Button onClick = {
-              e => {
-                e.preventDefault();
-                this.props.history.push("/gameScreen");
-              }
-            }
-            color = "primary" >
-              Play
-            </Button>
-          </DialogActions>
-        </Dialog>
+                Your Code: {this.state.code}
+                <br />
+                <br />
+                OR
+                <br />
+                <br />
+                <DialogContentText>Join a game</DialogContentText>
+                <TextField
+                  autoFocus
+                  margin="dense"
+                  id="name"
+                  label="Enter code here"
+                  fullWidth
+                  name="joinCode"
+                  value={this.state.joinCode}
+                  onChange={this.handleTextChange}
+                />
+              </DialogContent>
+              <DialogActions>
+                <Button onClick={this.handleClose} color="primary">
+                  Cancel
+                </Button>
+                <Button
+                  onClick={e => {
+                    e.preventDefault();
+                    {this.state.joinCode === null
+                       ? this.props.history.push(
+                           `/gameSession/${
+                             this.state.code
+                           }`
+                         )
+                       : this.props.history.push(
+                           `/gameSession/${
+                             this.state.joinCode
+                           }`
+                         );}
+                  }}
+                  color="primary"
+                >
+                  Play
+                </Button>
+              </DialogActions>
+            </Dialog>
+          </div>
+        )}
       </div>
     );
   }
